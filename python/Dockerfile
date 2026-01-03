@@ -8,6 +8,7 @@ RUN apt-get update && \
         python3 \
         python3-pip \
         python3-venv \
+        python3-xyz \
         git \
         curl \
         ripgrep \
@@ -39,7 +40,7 @@ RUN set -eux; \
     install lazygit /usr/local/bin && \
     rm "${LAZYGIT_FILE}" lazygit
 
-RUN git clone --depth 1 --branch to/python https://github.com/lucas-moraes/my-own-neovim-config.git /root/.config/nvim
+RUN git clone --depth 1 --branch to/python https://github.com/lucas-moraes/neovim-config.git /root/.config/nvim
 
 RUN /usr/local/bin/nvim --headless -c 'Lazy sync' -c 'quitall'
 
@@ -58,6 +59,9 @@ RUN set -eux; \
     \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.zshrc
 
 WORKDIR /workspace
 
