@@ -8,7 +8,6 @@ RUN apt-get update && \
         python3 \
         python3-pip \
         python3-venv \
-        python3-xyz \
         git \
         curl \
         ripgrep \
@@ -17,9 +16,14 @@ RUN apt-get update && \
         build-essential \
         software-properties-common \
         zsh \
+        fzf \
+        fd-find \
+        bat \
+        eza \
         openssh-client && \
     rm -rf /var/lib/apt/lists/* && \
-    chsh -s /usr/bin/zsh root
+    chsh -s /usr/bin/zsh root && \
+    ln -sf /usr/bin/fdfind /usr/local/bin/fd
 
 RUN set -eux; \
     NVIM_URL="https://github.com/neovim/neovim/releases/download/stable/nvim-linux-arm64.tar.gz"; \
@@ -62,6 +66,23 @@ RUN set -eux; \
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     echo 'export PATH="/root/.cargo/bin:$PATH"' >> /root/.zshrc
+
+# Install term-explorer
+RUN set -eux; \
+    git clone --depth 1 https://github.com/lucas-moraes/term-explorer.git /opt/term-explorer && \
+    install -d /root/.config/term-explorer && \
+    install -m 0644 /opt/term-explorer/term-explorer.zsh /root/.config/term-explorer/term-explorer.zsh && \
+    install -m 0644 /opt/term-explorer/README.md /root/.config/term-explorer/README.md && \
+    install -m 0644 /opt/term-explorer/LICENSE /root/.config/term-explorer/LICENSE && \
+    printf '\n# term-explorer\nsource /opt/term-explorer/term-explorer.zsh\n' >> /etc/zsh/zshrc && \
+    cat >/usr/local/bin/term-explorer <<'EOF'
+#!/usr/bin/env zsh
+source /opt/term-explorer/term-explorer.zsh
+term-explorer "$@"
+EOF
+
+RUN chmod +x /usr/local/bin/term-explorer && \
+    ln -sf /usr/local/bin/term-explorer /usr/local/bin/te
 
 WORKDIR /workspace
 
