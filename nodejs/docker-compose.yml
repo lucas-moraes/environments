@@ -1,0 +1,19 @@
+services:
+  container-dev:
+    build: .
+    container_name: nodejs
+    volumes:
+      - dados_do_projeto:/workspace
+      - ${HOME}/.ssh:/root/.ssh:ro
+      - ${HOME}/.zshrc:/root/.zshrc
+      - ${HOME}/.oh-my-zsh:/root/.oh-my-zsh
+    ports:
+      - "3000-3999:3000-3999"
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/zsh
+
+volumes:
+  dados_do_projeto:
+    name: nodejs
